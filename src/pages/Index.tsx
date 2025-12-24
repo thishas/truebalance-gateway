@@ -25,6 +25,12 @@ const Index = () => {
           <span className="font-semibold text-foreground">TrueBalance Planner</span>
           <div className="flex items-center gap-6">
             <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Home
+            </button>
+            <button
               onClick={() => scrollToSection("about")}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -297,6 +303,12 @@ const Index = () => {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <nav className="flex items-center justify-center gap-6">
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Home
+              </button>
               <button
                 onClick={() => scrollToSection("privacy")}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"

@@ -37,6 +37,12 @@ const Index = () => {
               Privacy
             </button>
             <button
+              onClick={() => scrollToSection("disclaimer")}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Disclaimer
+            </button>
+            <button
               onClick={() => scrollToSection("contact")}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -240,7 +246,7 @@ const Index = () => {
       </section>
 
       {/* Disclaimer Section */}
-      <section className="py-12 md:py-16 bg-secondary/30">
+      <section id="disclaimer" className="py-12 md:py-16 bg-secondary/30 scroll-mt-16">
         <div className="container">
           <div className="max-w-3xl mx-auto">
             <div className="bg-card rounded-2xl shadow-card p-6 md:p-8 border-l-4 border-primary">
@@ -296,6 +302,12 @@ const Index = () => {
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Privacy Policy
+              </button>
+              <button
+                onClick={() => scrollToSection("disclaimer")}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Disclaimer
               </button>
               <button
                 onClick={() => scrollToSection("about")}

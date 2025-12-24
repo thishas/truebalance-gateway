@@ -328,7 +328,7 @@ const Index = () => {
                 We welcome feedback, questions, and bug reports.
               </p>
               <a
-                href="mailto:cognitpath@gmail.com"
+                href="mailto:cognitpath@gmail.com?subject=TrueBalance%20Planner%20Feedback"
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 cognitpath@gmail.com

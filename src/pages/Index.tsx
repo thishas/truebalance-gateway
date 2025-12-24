@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, WifiOff, UserX, EyeOff, Shield, Mail } from "lucide-react";
 import heroVideo from "@/assets/hero-background.mp4";
@@ -12,10 +12,53 @@ const scrollToSection = (sectionId: string) => {
   }
 };
 
+type SectionId = "home" | "about" | "privacy" | "disclaimer" | "contact";
+
 const Index = () => {
+  const [activeSection, setActiveSection] = useState<SectionId>("home");
+
   const openApp = useCallback(() => {
     window.location.href = APP_URL;
   }, []);
+
+  useEffect(() => {
+    const sectionIds: SectionId[] = ["about", "privacy", "disclaimer", "contact"];
+    
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100;
+      
+      // Check if we're at the top (Home)
+      if (scrollPosition < 300) {
+        setActiveSection("home");
+        return;
+      }
+
+      // Check each section
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(id);
+            return;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check initial position
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const getNavClassName = (section: SectionId) => {
+    const baseClass = "text-sm transition-colors";
+    if (activeSection === section) {
+      return `${baseClass} text-primary font-medium border-b-2 border-primary pb-0.5`;
+    }
+    return `${baseClass} text-muted-foreground hover:text-foreground`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -26,31 +69,31 @@ const Index = () => {
           <div className="flex items-center gap-6">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className={getNavClassName("home")}
             >
               Home
             </button>
             <button
               onClick={() => scrollToSection("about")}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className={getNavClassName("about")}
             >
               About
             </button>
             <button
               onClick={() => scrollToSection("privacy")}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className={getNavClassName("privacy")}
             >
               Privacy
             </button>
             <button
               onClick={() => scrollToSection("disclaimer")}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className={getNavClassName("disclaimer")}
             >
               Disclaimer
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className={getNavClassName("contact")}
             >
               Contact
             </button>
@@ -305,25 +348,25 @@ const Index = () => {
             <nav className="flex items-center justify-center gap-6">
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className={getNavClassName("home")}
               >
                 Home
               </button>
               <button
                 onClick={() => scrollToSection("privacy")}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className={getNavClassName("privacy")}
               >
                 Privacy Policy
               </button>
               <button
                 onClick={() => scrollToSection("disclaimer")}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className={getNavClassName("disclaimer")}
               >
                 Disclaimer
               </button>
               <button
                 onClick={() => scrollToSection("about")}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className={getNavClassName("about")}
               >
                 About
               </button>

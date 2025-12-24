@@ -1,53 +1,53 @@
-import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Wifi, WifiOff, UserX, EyeOff, Shield, Mail, X } from "lucide-react";
+import { ArrowRight, WifiOff, UserX, EyeOff, Shield, Mail } from "lucide-react";
 import heroVideo from "@/assets/hero-background.mp4";
 
 const APP_URL = "#"; // Replace with actual app URL
-const REDIRECT_DELAY = 2000;
+
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth" });
+  }
+};
 
 const Index = () => {
-  const [countdown, setCountdown] = useState(2);
-  const [isRedirecting, setIsRedirecting] = useState(true);
-
-  const cancelRedirect = useCallback(() => {
-    setIsRedirecting(false);
-  }, []);
-
   const openApp = useCallback(() => {
     window.location.href = APP_URL;
   }, []);
 
-  useEffect(() => {
-    if (!isRedirecting) return;
-
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    const redirectTimeout = setTimeout(() => {
-      if (isRedirecting) {
-        openApp();
-      }
-    }, REDIRECT_DELAY);
-
-    return () => {
-      clearInterval(countdownInterval);
-      clearTimeout(redirectTimeout);
-    };
-  }, [isRedirecting, openApp]);
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Top Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+        <div className="container flex items-center justify-between h-14">
+          <span className="font-semibold text-foreground">TrueBalance Planner</span>
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => scrollToSection("about")}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              About
+            </button>
+            <button
+              onClick={() => scrollToSection("privacy")}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Privacy
+            </button>
+            <button
+              onClick={() => scrollToSection("contact")}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Contact
+            </button>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section with Video Background */}
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-14">
         {/* Video Background */}
         <video
           autoPlay
@@ -102,23 +102,6 @@ const Index = () => {
             <p className="text-sm text-white/70 max-w-md mx-auto">
               No account. No tracking. Your data stays on your device.
             </p>
-
-            {/* Redirect Notice */}
-            {isRedirecting && (
-              <div className="flex items-center justify-center gap-3 pt-4">
-                <div className="flex items-center gap-2 text-white/70 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-white/50 animate-pulse-soft" />
-                  <span>Redirecting to app in {countdown}s...</span>
-                </div>
-                <button
-                  onClick={cancelRedirect}
-                  className="inline-flex items-center gap-1 text-white/80 hover:text-white text-sm font-medium transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                  Cancel
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </section>
@@ -152,7 +135,7 @@ const Index = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-12 md:py-16 bg-secondary/30">
+      <section id="about" className="py-12 md:py-16 bg-secondary/30 scroll-mt-16">
         <div className="container">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-8">
@@ -199,7 +182,7 @@ const Index = () => {
       </section>
 
       {/* Privacy Section */}
-      <section className="py-12 md:py-16 bg-background">
+      <section id="privacy" className="py-12 md:py-16 bg-background scroll-mt-16">
         <div className="container">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">
@@ -278,7 +261,7 @@ const Index = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-12 md:py-16 bg-background">
+      <section id="contact" className="py-12 md:py-16 bg-background scroll-mt-16">
         <div className="container">
           <div className="max-w-md mx-auto text-center">
             <div className="bg-card rounded-2xl shadow-card p-6 md:p-8">
@@ -308,18 +291,18 @@ const Index = () => {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <nav className="flex items-center justify-center gap-6">
-              <Link
-                to="/privacy"
+              <button
+                onClick={() => scrollToSection("privacy")}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Privacy Policy
-              </Link>
-              <Link
-                to="/about"
+              </button>
+              <button
+                onClick={() => scrollToSection("about")}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 About
-              </Link>
+              </button>
             </nav>
             
             <p className="text-sm text-muted-foreground">

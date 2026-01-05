@@ -1,7 +1,47 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUp, List } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+const tocSections = [
+  { id: "overview", label: "Overview" },
+  { id: "strategy-vs-order", label: "Strategy vs Order" },
+  { id: "order-tab", label: "Order Tab" },
+  { id: "custom-rank", label: "Custom Rank" },
+  { id: "common-scenarios", label: "Common Scenarios" },
+  { id: "strategy-tab", label: "Strategy Tab" },
+  { id: "debts-tab", label: "Debts Tab" },
+  { id: "schedule-tab", label: "Schedule Tab" },
+  { id: "charts-tab", label: "Charts Tab" },
+  { id: "cashflow-tab", label: "Cashflow Tab" },
+  { id: "settings-tab", label: "Settings Tab" },
+  { id: "data-management", label: "Data Management" },
+  { id: "disclaimer", label: "Disclaimer" },
+];
 
 const UserGuide = () => {
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showToc, setShowToc] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+      setShowToc(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
@@ -15,9 +55,47 @@ const UserGuide = () => {
             Home
           </Link>
           <span className="font-semibold text-foreground">TrueBalance Planner</span>
-          <div className="w-16" /> {/* Spacer for centering */}
+          <button
+            onClick={() => setShowToc(!showToc)}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Toggle table of contents"
+          >
+            <List className="w-4 h-4" />
+            <span className="hidden sm:inline">Contents</span>
+          </button>
         </div>
       </nav>
+
+      {/* Table of Contents Dropdown */}
+      {showToc && (
+        <div className="fixed top-14 right-0 z-40 w-72 max-h-[70vh] overflow-y-auto bg-card border border-border shadow-lg rounded-bl-lg">
+          <div className="p-4">
+            <h3 className="font-semibold text-foreground mb-3">Table of Contents</h3>
+            <nav className="space-y-1">
+              {tocSections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className="block w-full text-left text-sm text-muted-foreground hover:text-primary hover:bg-secondary/50 px-2 py-1.5 rounded transition-colors"
+                >
+                  {section.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 py-12 md:py-16">
@@ -32,7 +110,7 @@ const UserGuide = () => {
             </header>
 
             {/* Overview */}
-            <section className="mb-10">
+            <section id="overview" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Overview</h2>
               <p className="text-muted-foreground leading-relaxed">
                 TrueBalance Planner is a private, offline-first financial planning tool designed to help you understand your debt, choose payoff strategies, and visualize progress over time.
@@ -43,7 +121,7 @@ const UserGuide = () => {
             </section>
 
             {/* Understanding Strategy vs Order */}
-            <section className="mb-10">
+            <section id="strategy-vs-order" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Understanding Strategy vs Order (Important)</h2>
               <p className="text-muted-foreground leading-relaxed">
                 TrueBalance Planner separates how payments are calculated from how debts are displayed and prioritized. This distinction gives you flexibility—but it's important to understand how they work together.
@@ -68,7 +146,7 @@ const UserGuide = () => {
             </section>
 
             {/* Order Tab */}
-            <section className="mb-10">
+            <section id="order-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Order Tab</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 How debts are sequenced and displayed
@@ -90,7 +168,7 @@ const UserGuide = () => {
             </section>
 
             {/* Custom Rank Explained */}
-            <section className="mb-10">
+            <section id="custom-rank" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Custom Rank Explained</h2>
               <p className="text-muted-foreground leading-relaxed">
                 Custom Rank is optional and only applies when using a Custom Order strategy.
@@ -136,7 +214,7 @@ const UserGuide = () => {
             </section>
 
             {/* Common Scenarios */}
-            <section className="mb-10">
+            <section id="common-scenarios" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Common Scenarios (Examples)</h2>
               <div className="space-y-4 text-muted-foreground">
                 <div>
@@ -164,7 +242,7 @@ const UserGuide = () => {
             </section>
 
             {/* Strategy Tab */}
-            <section className="mb-10">
+            <section id="strategy-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Strategy Tab</h2>
               <p className="text-muted-foreground leading-relaxed">
                 The Strategy tab is where your payoff plan begins.
@@ -192,7 +270,7 @@ const UserGuide = () => {
             </section>
 
             {/* Debts Tab */}
-            <section className="mb-10">
+            <section id="debts-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Debts Tab</h2>
               <p className="text-muted-foreground leading-relaxed">
                 Add and manage all debts in one place.
@@ -277,7 +355,7 @@ const UserGuide = () => {
             </section>
 
             {/* Schedule Tab */}
-            <section className="mb-10">
+            <section id="schedule-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Schedule Tab</h2>
               <p className="text-muted-foreground leading-relaxed">
                 The Schedule tab provides a month-by-month payoff timeline.
@@ -294,7 +372,7 @@ const UserGuide = () => {
             </section>
 
             {/* Charts Tab */}
-            <section className="mb-10">
+            <section id="charts-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Charts Tab — Visual Progress Tracking</h2>
               <p className="text-muted-foreground leading-relaxed">
                 The Charts tab provides three complementary visual views of your payoff journey.
@@ -338,7 +416,7 @@ const UserGuide = () => {
             </section>
 
             {/* Budget Tab */}
-            <section className="mb-10">
+            <section id="cashflow-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Budget Tab</h2>
               <p className="text-muted-foreground leading-relaxed">
                 The Budget tab helps you track cashflow alongside debt payoff.
@@ -521,7 +599,7 @@ const UserGuide = () => {
             </section>
 
             {/* Sync Tab */}
-            <section className="mb-10">
+            <section id="settings-tab" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Sync Tab</h2>
               <p className="text-muted-foreground leading-relaxed">
                 TrueBalance Planner is privacy-first.
@@ -717,7 +795,7 @@ const UserGuide = () => {
             </section>
 
             {/* Data Management */}
-            <section className="mb-10">
+            <section id="data-management" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Data Management</h2>
 
               <h4 className="text-lg font-semibold text-foreground mt-4 mb-2">Sample Data Loaded</h4>
@@ -757,7 +835,7 @@ const UserGuide = () => {
             </section>
 
             {/* Disclaimer */}
-            <section className="mb-10">
+            <section id="disclaimer" className="mb-10 scroll-mt-20">
               <h2 className="text-2xl font-bold text-foreground mb-4">Disclaimer</h2>
               <p className="text-muted-foreground leading-relaxed">
                 TrueBalance Planner is provided for educational and planning purposes only.

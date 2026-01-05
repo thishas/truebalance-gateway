@@ -97,6 +97,14 @@ const Index = () => {
             >
               Contact
             </button>
+            <a
+              href="/user-guide"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              User Guide
+            </a>
           </div>
         </div>
       </nav>
@@ -341,27 +349,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* User Guide Link Section */}
-      <section className="py-8 bg-secondary/30">
-        <div className="container">
-          <div className="max-w-md mx-auto text-center">
-            <a
-              href="/user-guide"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 font-medium transition-colors text-lg"
-            >
-              User Guide
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="border-t border-border bg-card py-8">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center space-y-4">
-            <nav className="flex items-center justify-center gap-6">
+            <nav className="flex items-center justify-center gap-6 flex-wrap">
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className={getNavClassName("home")}
@@ -386,6 +378,14 @@ const Index = () => {
               >
                 About
               </button>
+              <a
+                href="/user-guide"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                User Guide
+              </a>
             </nav>
             
             <p className="text-sm text-muted-foreground">

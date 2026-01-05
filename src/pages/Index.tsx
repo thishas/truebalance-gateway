@@ -341,6 +341,22 @@ const Index = () => {
         </div>
       </section>
 
+      {/* User Guide Link Section */}
+      <section className="py-8 bg-secondary/30">
+        <div className="container">
+          <div className="max-w-md mx-auto text-center">
+            <a
+              href="/user-guide"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 font-medium transition-colors text-lg"
+            >
+              User Guide
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border bg-card py-8">
         <div className="container">

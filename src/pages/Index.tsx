@@ -1,9 +1,26 @@
 import { useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, WifiOff, UserX, EyeOff, Shield, Mail } from "lucide-react";
+import { ArrowRight, WifiOff, UserX, EyeOff, Shield, Mail, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import heroVideo from "@/assets/hero-background.mp4";
 
-const APP_URL = "#"; // Replace with actual app URL
+const APP_URL = "https://app-truebalance.netlify.app";
+
+// Umami tracking helper (no PII)
+const trackEvent = (eventName: string) => {
+  if (typeof window !== 'undefined' && (window as any).umami) {
+    (window as any).umami.track(eventName);
+  }
+};
 
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId);
@@ -16,10 +33,86 @@ type SectionId = "home" | "about" | "privacy" | "disclaimer" | "contact";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<SectionId>("home");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ fullName: "", email: "" });
+  const [isAcknowledged, setIsAcknowledged] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
-  const openApp = useCallback(() => {
-    window.location.href = APP_URL;
+  const openSignupModal = useCallback(() => {
+    trackEvent("open_app_clicked");
+    trackEvent("signup_modal_opened");
+    setIsModalOpen(true);
   }, []);
+
+  const closeModal = useCallback(() => {
+    trackEvent("signup_cancelled");
+    setIsModalOpen(false);
+    setFormData({ fullName: "", email: "" });
+    setIsAcknowledged(false);
+    setValidationError("");
+    setIsSuccess(false);
+  }, []);
+
+  const validateForm = () => {
+    if (!formData.fullName.trim()) {
+      return "Please enter your full name.";
+    }
+    if (!formData.email.trim()) {
+      return "Please enter your email address.";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return "Please enter a valid email address.";
+    }
+    if (!isAcknowledged) {
+      return "Please acknowledge that your financial data stays on your device.";
+    }
+    return "";
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const error = validateForm();
+    if (error) {
+      setValidationError(error);
+      trackEvent("signup_validation_failed");
+      return;
+    }
+
+    setValidationError("");
+    setIsSubmitting(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("form-name", "truebalance-access");
+      formDataToSend.append("fullName", formData.fullName);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("acknowledged", "true");
+
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formDataToSend as any).toString(),
+      });
+
+      if (response.ok) {
+        trackEvent("signup_submitted");
+        setIsSuccess(true);
+        setTimeout(() => {
+          window.location.href = APP_URL;
+        }, 1500);
+      } else {
+        setValidationError("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setValidationError("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const sectionIds: SectionId[] = ["about", "privacy", "disclaimer", "contact"];
@@ -153,7 +246,7 @@ const Index = () => {
               <Button
                 variant="hero"
                 size="xl"
-                onClick={openApp}
+                onClick={openSignupModal}
                 className="shadow-xl"
               >
                 Open App
@@ -163,11 +256,106 @@ const Index = () => {
 
             {/* Privacy Note */}
             <p className="text-sm text-white/70 max-w-md mx-auto">
-              No account. No tracking. Your data stays on your device.
+              No financial data is collected or synced. Your plan stays on your device.
             </p>
           </div>
         </div>
       </section>
+
+      {/* Signup Modal */}
+      <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Access TrueBalance Planner</DialogTitle>
+            <DialogDescription>
+              We use email to measure interest and notify users of updates.
+              <br />
+              No financial data is collected or synced. Your plan stays on your device.
+            </DialogDescription>
+          </DialogHeader>
+
+          {isSuccess ? (
+            <div className="py-8 text-center">
+              <p className="text-foreground font-medium">Thanks — redirecting to the app…</p>
+            </div>
+          ) : (
+            <>
+              {/* Hidden Netlify form for static detection */}
+              <form name="truebalance-access" data-netlify="true" netlify-honeypot="bot-field" hidden>
+                <input type="text" name="fullName" />
+                <input type="email" name="email" />
+                <input type="checkbox" name="acknowledged" />
+                <input type="text" name="bot-field" />
+              </form>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input type="hidden" name="form-name" value="truebalance-access" />
+                <input type="hidden" name="bot-field" />
+
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    placeholder="Your full name"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="flex items-start space-x-3 pt-2">
+                  <Checkbox
+                    id="acknowledged"
+                    checked={isAcknowledged}
+                    onCheckedChange={(checked) => setIsAcknowledged(checked === true)}
+                  />
+                  <Label htmlFor="acknowledged" className="text-sm leading-relaxed cursor-pointer">
+                    I understand that my financial data stays on my device and is never synced.
+                  </Label>
+                </div>
+
+                {validationError && (
+                  <p className="text-sm text-destructive">{validationError}</p>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeModal}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    disabled={isSubmitting}
+                    className="flex-1"
+                  >
+                    {isSubmitting ? "Submitting…" : "Continue to App"}
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Trust Signals Section */}
       <section className="py-12 md:py-16 bg-background">

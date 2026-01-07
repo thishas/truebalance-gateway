@@ -91,7 +91,7 @@ const Index = () => {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           "form-name": "truebalance-access",
-          fullName: formData.fullName,
+          name: formData.fullName,
           email: formData.email,
           privacyAck: "true",
           "bot-field": ""
@@ -100,10 +100,11 @@ const Index = () => {
 
       if (response.ok) {
         trackEvent("signup_submitted");
+        localStorage.setItem("truebalance_signup_completed", "1");
         setIsSuccess(true);
         setTimeout(() => {
           window.location.href = APP_URL;
-        }, 1500);
+        }, 1000);
       } else {
         trackEvent("signup_submit_failed");
         setValidationError("Something went wrong. Please try again.");
@@ -162,12 +163,12 @@ const Index = () => {
         name="truebalance-access" 
         method="POST" 
         data-netlify="true" 
-        data-netlify-honeypot="bot-field" 
-        hidden
+        netlify-honeypot="bot-field"
+        style={{ display: 'none' }}
       >
         <input type="hidden" name="form-name" value="truebalance-access" />
-        <input name="bot-field" />
-        <input type="text" name="fullName" />
+        <input type="hidden" name="bot-field" />
+        <input type="text" name="name" />
         <input type="email" name="email" />
         <input type="checkbox" name="privacyAck" />
       </form>

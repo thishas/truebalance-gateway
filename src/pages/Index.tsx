@@ -86,16 +86,16 @@ const Index = () => {
     setIsSubmitting(true);
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("form-name", "truebalance-access");
-      formDataToSend.append("fullName", formData.fullName);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("acknowledged", "true");
-
       const response = await fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formDataToSend as any).toString(),
+        body: new URLSearchParams({
+          "form-name": "truebalance-access",
+          fullName: formData.fullName,
+          email: formData.email,
+          privacyAck: "true",
+          "bot-field": ""
+        }).toString(),
       });
 
       if (response.ok) {
@@ -105,9 +105,11 @@ const Index = () => {
           window.location.href = APP_URL;
         }, 1500);
       } else {
+        trackEvent("signup_submit_failed");
         setValidationError("Something went wrong. Please try again.");
       }
     } catch (err) {
+      trackEvent("signup_submit_failed");
       setValidationError("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -155,6 +157,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Hidden static Netlify form for build-time detection */}
+      <form 
+        name="truebalance-access" 
+        method="POST" 
+        data-netlify="true" 
+        data-netlify-honeypot="bot-field" 
+        hidden
+      >
+        <input type="hidden" name="form-name" value="truebalance-access" />
+        <input name="bot-field" />
+        <input type="text" name="fullName" />
+        <input type="email" name="email" />
+        <input type="checkbox" name="privacyAck" />
+      </form>
+
       {/* Top Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container flex items-center justify-between h-14">
@@ -280,17 +297,7 @@ const Index = () => {
             </div>
           ) : (
             <>
-              {/* Hidden Netlify form for static detection */}
-              <form name="truebalance-access" data-netlify="true" netlify-honeypot="bot-field" hidden>
-                <input type="text" name="fullName" />
-                <input type="email" name="email" />
-                <input type="checkbox" name="acknowledged" />
-                <input type="text" name="bot-field" />
-              </form>
-
               <form onSubmit={handleSubmit} className="space-y-4">
-                <input type="hidden" name="form-name" value="truebalance-access" />
-                <input type="hidden" name="bot-field" />
 
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>

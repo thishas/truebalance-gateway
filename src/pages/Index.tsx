@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import heroVideo from "@/assets/hero-background.mp4";
 
-const APP_URL = "https://app-truebalance.netlify.app";
+const APP_URL = "https://app-truebalance.netlify.app/?signup=1";
 
 // Umami tracking helper (no PII)
 const trackEvent = (eventName: string) => {
@@ -158,20 +158,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Hidden static Netlify form for build-time detection */}
-      <form 
-        name="truebalance-access" 
-        method="POST" 
-        data-netlify="true" 
-        netlify-honeypot="bot-field"
-        style={{ display: 'none' }}
-      >
-        <input type="hidden" name="form-name" value="truebalance-access" />
-        <input type="hidden" name="bot-field" />
-        <input type="text" name="name" />
-        <input type="email" name="email" />
-        <input type="checkbox" name="privacyAck" />
-      </form>
 
       {/* Top Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">

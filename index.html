@@ -36,6 +36,22 @@
     </noscript>
   </head>
   <body>
+    <!-- Hidden Netlify form for build-time detection -->
+    <form name="truebalance-access"
+          method="POST"
+          action="/"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          hidden>
+      <input type="hidden" name="form-name" value="truebalance-access" />
+      <p>
+        <label>Don't fill this out: <input name="bot-field" /></label>
+      </p>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="checkbox" name="privacyAck" />
+    </form>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
